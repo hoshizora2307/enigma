@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ASTSTRAL_ALERT_SYSTEM</title>
+    <style>
+        body {
+            /* 深い宇宙をイメージしたグラデーションと星の背景 */
+            background: radial-gradient(circle at center, #001122 0%, #000000 100%);
+            color: #ff4444; /* 警告色（赤） */
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* 星を生成する擬似要素 */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px;
+            z-index: -1;
+            opacity: 0.6;
+            animation: starsMove 100s linear infinite;
+        }
+
+        @keyframes starsMove {
+            from { background-position: 0 0, 40px 60px, 130px 270px; }
+            to { background-position: 550px 550px, 390px 410px, 380px 820px; }
+        }
+
+        #terminal {
+            max-width: 850px;
+            margin: auto;
+            border: 2px solid #ff0000;
+            padding: 25px;
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.5), inset 0 0 10px rgba(255, 0, 0, 0.2);
+            background: rgba(0, 0, 5, 0.9); /* 少し青みを帯びた黒 */
+            min-height: 85vh;
+            position: relative;
+            backdrop-filter: blur(2px); /* 背景を少しぼかす */
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background-color: #ff0000;
+            animation: blink 0.8s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .line { 
+            margin-bottom: 8px; 
+            min-height: 1.2em; 
+            text-shadow: 0 0 8px rgba(255, 0, 0, 0.8); 
+            letter-spacing: 1px;
+        }
+        
+        /* 最終警告メッセージのスタイル */
+        .warning-text { 
+            color: #ffffff; 
+            background: rgba(200, 0, 0, 0.8);
+            font-weight: bold; 
+            padding: 25px; 
+            margin-top: 30px; 
+            display: none; 
+            text-align: center;
+            border-radius: 5px;
+            border: 1px solid #ffffff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+            50% { transform: scale(1.02); box-shadow: 0 0 30px rgba(255, 255, 255, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+        }
+
+        /* 宇宙的なスキャンライン */
+        .scanline {
+            width: 100%; height: 2px; z-index: 999;
+            background: rgba(255, 0, 0, 0.1);
+            position: absolute; top: 0; left: 0;
+            animation: scan 4s linear infinite;
+        }
+        @keyframes scan { to { top: 100%; } }
+
+        .glitch-static {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            opacity: 0.03; pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="glitch-static"></div>
+    <div id="terminal">
+        <div class="scanline"></div>
+        <div id="output"></div>
+        <span id="active-line"></span><span class="cursor"></span>
+        
+        <div id="final-message" class="warning-text">
+            <h1 style="margin-top:0; font-size: 2em; text-shadow: 0 0 10px #fff;">⚠️ 星空からの警告</h1>
+            <h2 style="margin-bottom: 15px;">SECURITY ALERT: DATA VULNERABILITY</h2>
+            <p style="font-size: 1.2em; line-height: 1.6;">わたしはあなたのこのような情報を簡単にみることができる。<br>
+            クラッカーたちはこれらを悪用することができる。<br>
+            怪しいサイトにはアクセスしないように気を付けて。</p>
+        </div>
+    </div>
+
+    <script>
+        const output = document.getElementById('output');
+        const activeLine = document.getElementById('active-line');
+        const finalMessage = document.getElementById('final-message');
+
+        const logs = [
+            " [!] SIGNAL RECEIVED FROM VOID...",
+            " [!] ANALYZING INCOMING STREAM...",
+            " [!] INTERCEPTING CLIENT METADATA...",
+            " [!] LOCALIZING TERRESTRIAL NODE...",
+            "--------------------------------------------------",
+        ];
+
+        async function typeLog(text) {
+            return new Promise(resolve => {
+                let i = 0;
+                const interval = setInterval(() => {
+                    activeLine.textContent += text[i];
+                    i++;
+                    if (i === text.length) {
+                        clearInterval(interval);
+                        output.innerHTML += `<div class="line">${activeLine.textContent}</div>`;
+                        activeLine.textContent = '';
+                        setTimeout(resolve, 100); // 少しゆっくりにする
+                    }
+                }, 30);
+            });
+        }
+
+        async function startHackingDemo() {
+            for (let log of logs) {
+                await typeLog(log);
+            }
+
+            try {
+                // IP情報の取得
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                
+                await typeLog(` [DATA] TERRA_IP  :: ${data.ip}`);
+                await typeLog(` [DATA] NETWORK   :: ${data.org}`);
+                await typeLog(` [DATA] LOCATION  :: ${data.city}, ${data.region}, ${data.country_name}`);
+            } catch (e) {
+                await typeLog(` [FAIL] SIGNAL_ENCRYPTION_ACTIVE`);
+            }
+
+            await typeLog(` [DATA] SYSTEM_OS :: ${navigator.platform}`);
+            await typeLog(` [DATA] USER_AGENT:: ${navigator.userAgent.substring(0, 50)}...`);
+            await typeLog("--------------------------------------------------");
+            await typeLog(" [!] ANALYSIS COMPLETE.");
+            await typeLog(" [!] SIGNAL TERMINATED.");
+
+            // 最後に警告文をド派手に表示
+            setTimeout(() => {
+                finalMessage.style.display = 'block';
+            }, 800);
+        }
+
+        startHackingDemo();
+    </script>
+</body>
+</html>
