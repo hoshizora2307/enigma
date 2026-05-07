@@ -13,24 +13,21 @@
             font-family: 'Courier New', Courier, monospace;
             margin: 0; padding: 0;
             width: 100%; height: 100%;
-            overflow-x: hidden; /* 横揺れ対策 */
+            overflow-x: hidden;
         }
 
-        /* 宇宙背景 */
         .space {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at center, #110000 0%, #000 100%);
             z-index: -2;
         }
 
-        /* 画面全体のグリッチ揺れアニメーション */
+        /* 画面全体のグリッチ揺れ */
         @keyframes quake {
             0% { transform: translate(0,0); }
-            10% { transform: translate(-2px, -2px); filter: hue-rotate(90deg); }
-            20% { transform: translate(2px, 2px); }
-            30% { transform: translate(-2px, 2px); }
-            40% { transform: translate(2px, -2px); }
-            50% { transform: translate(-1px, -1px); }
+            10% { transform: translate(-3px, -3px); filter: hue-rotate(90deg); }
+            20% { transform: translate(3px, 3px); }
+            30% { transform: translate(-3px, 3px); }
             100% { transform: translate(0,0); }
         }
 
@@ -38,19 +35,18 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 0, 0, 0.2);
             display: none; z-index: -1;
-            animation: flash 0.2s infinite;
+            animation: flash 0.15s infinite;
         }
 
         @keyframes flash {
-            0% { opacity: 0.5; }
+            0%, 100% { opacity: 0.6; }
             50% { opacity: 0; }
-            100% { opacity: 0.5; }
         }
 
         #terminal {
             padding: 20px;
             box-sizing: border-box;
-            padding-bottom: 300px; /* 警告文が表示されるための余白 */
+            padding-bottom: 300px;
         }
 
         .line {
@@ -60,15 +56,15 @@
             word-break: break-all;
         }
 
-        /* 警告ボックスを画面中央付近に固定 */
+        /* 中央固定の警告ボックス */
         #final-message {
             position: fixed;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             width: 90%;
-            background: rgba(255, 0, 0, 0.95);
+            background: rgba(230, 0, 0, 0.98);
             color: white;
-            padding: 20px;
+            padding: 25px;
             border: 4px double white;
             display: none;
             z-index: 1000;
@@ -80,15 +76,32 @@
         .warning-title {
             font-size: 1.8em;
             font-weight: bold;
-            margin-bottom: 10px;
-            text-decoration: underline;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px #000;
         }
 
-        /* 走査線 */
+        .btn-understand {
+            margin-top: 25px;
+            padding: 15px 30px;
+            background: #fff;
+            color: #ff0000;
+            border: none;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-understand:active {
+            transform: scale(0.9);
+        }
+
         .scanline {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 4px, 3px 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
             pointer-events: none; z-index: 100;
         }
     </style>
@@ -105,12 +118,16 @@
 
     <div id="final-message">
         <div class="warning-title">⚠️ 星空からの警告</div>
-        <p style="font-size: 1.1em; line-height: 1.4; margin: 0;">
+        <p style="font-size: 1.15em; line-height: 1.5; text-align: left; margin: 0;">
             わたしはあなたのこのような情報を簡単にみることができる。<br><br>
             クラッカーたちはこれらを悪用することができる。<br><br>
             怪しいサイトにはアクセスしないように気を付けて。
         </p>
-        <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; background:white; color:red; border:none; font-weight:bold;">理解しました</button>
+        
+        <!-- 理解しましたボタン：ハリボー公式サイトへ -->
+        <button class="btn-understand" onclick="window.location.href='https://www.haribo.com/ja-jp'">
+            理解しました
+        </button>
     </div>
 
     <script>
@@ -119,7 +136,7 @@
         const finalMessage = document.getElementById('final-message');
         const alertBg = document.getElementById('alert-bg');
 
-        async function typeLog(text, delay = 20) {
+        async function typeLog(text, delay = 15) {
             return new Promise(resolve => {
                 let i = 0;
                 const interval = setInterval(() => {
@@ -130,69 +147,67 @@
                         output.innerHTML += `<div class="line">${activeLine.textContent}</div>`;
                         activeLine.textContent = '';
                         window.scrollTo(0, document.body.scrollHeight);
-                        setTimeout(resolve, 50);
+                        setTimeout(resolve, 40);
                     }
                 }, delay);
             });
         }
 
         async function startSystem() {
-            await typeLog("[!] WARNING: UNKNOWN SIGNAL DETECTED");
-            await typeLog("[!] INITIATING TRACE...");
+            await typeLog("[!] WARNING: COSMIC BREACH DETECTED");
+            await typeLog("[!] INTERCEPTING ENCRYPTED DATA...");
             
-            // 偽のプログレスバー演出
-            for(let i=0; i<=10; i++) {
-                await typeLog(`[SCANNING] ${i*10}% [${'#'.repeat(i)}${'.'.repeat(10-i)}]`, 10);
+            for(let i=0; i<=5; i++) {
+                await typeLog(`[CAPTURING] ${i*20}% [${'#'.repeat(i*2)}${'.'.repeat(10-i*2)}]`, 10);
             }
 
             try {
                 const res = await fetch('https://ipapi.co/json/');
                 const data = await res.json();
-                await typeLog(`[FOUND] IPv4_SOURCE: ${data.ip}`);
-                await typeLog(`[FOUND] PROVIDER: ${data.org}`);
-                await typeLog(`[FOUND] GEO_LOC: ${data.city}, ${data.country_name}`);
-                await typeLog(`[FOUND] TIMEZONE: ${data.timezone}`);
+                await typeLog(`[!] TARGET_IP: ${data.ip}`);
+                await typeLog(`[!] PROVIDER : ${data.org}`);
+                await typeLog(`[!] LOCATION : ${data.city}, ${data.country_name}`);
             } catch(e) {
-                await typeLog("[ERROR] TRACE_FAILED: PROXY DETECTED");
+                await typeLog("[!] ERR: IP_SHIELD_DETECTED");
             }
 
-            await typeLog(`[FOUND] CORE_COUNT: ${navigator.hardwareConcurrency || '??'} cores`);
-            await typeLog(`[FOUND] MEMORY: ${navigator.deviceMemory || '??'} GB`);
-            await typeLog(`[FOUND] SCREEN: ${screen.width}x${screen.height}`);
-            await typeLog(`[FOUND] BATTERY: ${await getBatteryInfo()}`);
+            await typeLog(`[!] DEVICE_OS: ${navigator.platform}`);
+            await typeLog(`[!] BROWSER  : ${navigator.userAgent.split(' ')[0]}`);
+            await typeLog(`[!] CORES    : ${navigator.hardwareConcurrency || 'N/A'}`);
+            await typeLog(`[!] MEMORY   : ${navigator.deviceMemory || 'N/A'} GB`);
+            await typeLog(`[!] BATTERY  : ${await getBatteryInfo()}`);
             
             await typeLog("--------------------------------");
-            await typeLog("[!] SIGNAL STRENGTH: CRITICAL");
-            await typeLog("[!] ALERT: THE VOID IS WATCHING YOU.");
+            await typeLog("[!] ALL DATA EXPOSED.");
+            await typeLog("[!] DISCONNECTING IN 3... 2... 1...");
 
-            // 恐怖演出の開始
             triggerTerror();
         }
 
         async function getBatteryInfo() {
             if (navigator.getBattery) {
                 const b = await navigator.getBattery();
-                return `${Math.round(b.level * 100)}% (${b.charging ? 'Charging' : 'Discharging'})`;
+                return `${Math.round(b.level * 100)}%`;
             }
             return "UNKNOWN";
         }
 
         function triggerTerror() {
-            // 1. 画面揺らし
             document.body.style.animation = "quake 0.1s infinite";
-            // 2. 赤点滅
             alertBg.style.display = "block";
-            // 3. バイブレーション（Android/一部スマホのみ）
-            if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 300]);
             
-            // 4. 警告文を中央に表示
+            // バイブレーション（Androidなど）
+            if (navigator.vibrate) {
+                navigator.vibrate([200, 100, 200, 100, 500]);
+            }
+            
             setTimeout(() => {
                 finalMessage.style.display = "block";
                 document.getElementById('cursor').style.display = "none";
-            }, 500);
+            }, 600);
         }
 
-        window.onload = () => setTimeout(startSystem, 1000);
+        window.onload = () => setTimeout(startSystem, 800);
     </script>
 </body>
 </html>
